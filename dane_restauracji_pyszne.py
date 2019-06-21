@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
-
 start_time = time.time()
 
 polish_signs = {'ę': 'e',
@@ -44,13 +43,19 @@ names = []
 kitchens = []
 delivery_costs = []
 min_order = []
+districts = []
+postal_codes = []
 
-for site in range(len(pages_of_codes))[280:300]:  # done [:280]
+for site in range(len(pages_of_codes))[:]:  # done [:1000]
+    district = pages_of_codes[site].split('-')[-3].capitalize()
+    code = pages_of_codes[site][-6:]
     page = requests.get(pages_of_codes[site])
     soup = BeautifulSoup(page.content, 'html.parser')
     for i in soup.find_all('a', class_='restaurantname')[:-1]:
         i = i.get_text().strip()
         names.append(i)
+        districts.append(district)
+        postal_codes.append(code)
 
     for i in soup.find_all(class_='kitchens')[:-1]:
         i = i.get_text().strip()
@@ -71,21 +76,27 @@ for site in range(len(pages_of_codes))[280:300]:  # done [:280]
     print(f"{site+1}/{len(pages_of_codes)}")
 
 
-zippedList = list(zip(names, kitchens, delivery_costs, min_order))
+zippedList = list(zip(names, districts, postal_codes, kitchens,
+                      delivery_costs, min_order))
 
 # create initial .csv file
 # df = pd.DataFrame(zippedList,
-#                   columns=['Name', 'Kitchens', 'Delivery cost (PLN)',
-#                            'Min order cost (PLN)'])
-# df = df.drop_duplicates()
+#                   columns=['Name', 'District', 'Postal code', 'Kitchens',
+#                            'Delivery cost (PLN)', 'Min order cost (PLN)'])
+# df = df.drop_duplicates(subset=['Name', 'District', 'Kitchens',
+#                                 'Delivery cost (PLN)', 'Min order cost (PLN)'])
 # df.to_csv('Restaurants_in_Warsaw_via_pyszne.csv', index=False)
 
 # append data to the existing df
 df = pd.read_csv('Restaurants_in_Warsaw_via_pyszne.csv')
 new_data = pd.DataFrame(zippedList,
-                        columns=['Name', 'Kitchens', 'Delivery cost (PLN)',
-                                 'Min order cost (PLN)'])
-df = df.append(new_data).drop_duplicates()
+                        columns=['Name', 'District', 'Postal code', 'Kitchens',
+                                 'Delivery cost (PLN)', 'Min order cost (PLN)'])
+df = df.append(new_data).drop_duplicates(subset=['Name',
+                                                 'District',
+                                                 'Kitchens',
+                                                 'Delivery cost (PLN)',
+                                                 'Min order cost (PLN)'])
 df.to_csv('Restaurants_in_Warsaw_via_pyszne.csv', index=False)
 
 end_time = time.time()
