@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import time
-start_time = time.time()
 
 polish_signs = {'ę': 'e',
                 'ł': 'l',
@@ -46,7 +44,7 @@ min_order = []
 districts = []
 postal_codes = []
 
-for site in range(len(pages_of_codes))[:]:  # done [:1000]
+for site in range(len(pages_of_codes))[:]:  # done [:1750]
     district = pages_of_codes[site].split('-')[-3].capitalize()
     code = pages_of_codes[site][-6:]
     page = requests.get(pages_of_codes[site])
@@ -84,20 +82,19 @@ zippedList = list(zip(names, districts, postal_codes, kitchens,
 #                   columns=['Name', 'District', 'Postal code', 'Kitchens',
 #                            'Delivery cost (PLN)', 'Min order cost (PLN)'])
 # df = df.drop_duplicates(subset=['Name', 'District', 'Kitchens',
-#                                 'Delivery cost (PLN)', 'Min order cost (PLN)'])
+#                                 'Delivery cost (PLN)',
+#                                 'Min order cost (PLN)'])
 # df.to_csv('Restaurants_in_Warsaw_via_pyszne.csv', index=False)
 
-# append data to the existing df
+# append data to the existing .csv file
 df = pd.read_csv('Restaurants_in_Warsaw_via_pyszne.csv')
 new_data = pd.DataFrame(zippedList,
                         columns=['Name', 'District', 'Postal code', 'Kitchens',
-                                 'Delivery cost (PLN)', 'Min order cost (PLN)'])
+                                 'Delivery cost (PLN)', 'Min order cost (PLN)']
+                        )
 df = df.append(new_data).drop_duplicates(subset=['Name',
                                                  'District',
                                                  'Kitchens',
                                                  'Delivery cost (PLN)',
                                                  'Min order cost (PLN)'])
 df.to_csv('Restaurants_in_Warsaw_via_pyszne.csv', index=False)
-
-end_time = time.time()
-print(end_time - start_time)
