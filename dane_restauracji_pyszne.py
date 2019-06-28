@@ -44,7 +44,7 @@ min_order = []
 districts = []
 postal_codes = []
 
-for site in range(len(pages_of_codes))[:]:  # done [:1750]
+for site in range(len(pages_of_codes)):  
     district = pages_of_codes[site].split('-')[-3].capitalize()
     code = pages_of_codes[site][-6:]
     page = requests.get(pages_of_codes[site])
