@@ -35,7 +35,7 @@ for site in pages_of_districts:
     for code in soup.find_all('div', class_='delarea'):
         code = code.get_text().split(' ')[0]
         pages_of_codes.append(f'{site}-{code}')
-# 4240 pages to go through
+# 4240 pages to iterate through
 
 names = []
 kitchens = []
@@ -44,7 +44,7 @@ min_order = []
 districts = []
 postal_codes = []
 
-for site in range(len(pages_of_codes)):  
+for site in range(len(pages_of_codes)):
     district = pages_of_codes[site].split('-')[-3].capitalize()
     code = pages_of_codes[site][-6:]
     page = requests.get(pages_of_codes[site])
